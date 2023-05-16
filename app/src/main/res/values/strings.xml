@@ -2,4 +2,10 @@
     <string name="app_name">fitness-kit</string>
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="menu_lessons">Занятия</string>
+    <string name="menu_request">Заявка</string>
+    <string name="menu_add">Добавить</string>
+    <string name="menu_chat">Чат</string>
+    <string name="menu_more">Ещё</string>
+    <string name="schedule_fragment_label">Расписание</string>
 </resources>

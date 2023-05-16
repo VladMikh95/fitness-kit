@@ -8,6 +8,6 @@
     <fragment
         android:id="@+id/scheduleFragment"
         android:name="ml.vladmikh.projects.fitness_kit.ui.view.ScheduleFragment"
-        android:label="fragment_schedule"
+        android:label="@string/schedule_fragment_label"
         tools:layout="@layout/fragment_schedule" />
 </navigation>

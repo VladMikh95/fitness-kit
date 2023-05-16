@@ -36,6 +36,8 @@ class ScheduleFragment : Fragment() {
     ): View? {
 
         _binding = FragmentScheduleBinding.inflate(inflater, container, false)
+
+
         val recyclerViewLessons = binding.recyclerViewLessons
         val adapter = FitnessKitRecyclerViewAdapter()
         recyclerViewLessons.adapter = adapter
@@ -47,4 +49,5 @@ class ScheduleFragment : Fragment() {
         viewModel.getScheduleData()
         return binding.root
     }
+
 }
