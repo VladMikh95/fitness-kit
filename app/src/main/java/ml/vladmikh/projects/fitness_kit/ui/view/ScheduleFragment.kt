@@ -7,6 +7,7 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import ml.vladmikh.projects.fitness_kit.component
+import ml.vladmikh.projects.fitness_kit.ui.adapters.FitnessKitRecyclerViewAdapter
 import ml.vladmikh.projects.fitness_kit.ui.viewmodel.FitnessKitViewModel
 import ml.vladmikh.projects.fitness_kit.ui.viewmodel.FitnessKitViewModelFactory
 import ml.vladmikh.projects.shopapp.databinding.FragmentScheduleBinding
@@ -35,20 +36,15 @@ class ScheduleFragment : Fragment() {
     ): View? {
 
         _binding = FragmentScheduleBinding.inflate(inflater, container, false)
-        return binding.root
-    }
+        val recyclerViewLessons = binding.recyclerViewLessons
+        val adapter = FitnessKitRecyclerViewAdapter()
+        recyclerViewLessons.adapter = adapter
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
+        viewModel.getLessonsUIList().observe(viewLifecycleOwner) {
+            adapter.refreshLessons(it)
+        }
+
         viewModel.getScheduleData()
-        /*viewModel.getLatestProduct().observe(viewLifecycleOwner) {
-            adapterLatestProduct.refreshProducts(it)
-        }
-
-        viewModel.getProductOnDiscont().observe(viewLifecycleOwner) {
-            adapterProductsOnDiscont.refreshProducts(it)
-        }
-
-        viewModel.getDataAboutProductsFromNetwork()*/
+        return binding.root
     }
 }

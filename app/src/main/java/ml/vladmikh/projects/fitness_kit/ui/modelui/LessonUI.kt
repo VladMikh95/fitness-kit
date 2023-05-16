@@ -9,5 +9,6 @@ data class LessonUI (
     val name: String,
     val place: String,
     val startTime: String,
-    val durationOfLesson: String
+    val durationOfLesson: String,
+    var isDateVisible: Boolean
 )

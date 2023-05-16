@@ -1,6 +1,7 @@
 package ml.vladmikh.projects.fitness_kit.ui.viewmodel
 
 import android.util.Log
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.launch
@@ -10,17 +11,21 @@ import ml.vladmikh.projects.fitness_kit.data.model.Trainer
 import ml.vladmikh.projects.fitness_kit.data.repository.Repository
 import ml.vladmikh.projects.fitness_kit.ui.modelui.LessonUI
 import retrofit2.Response
+import kotlin.collections.ArrayList
 
 class FitnessKitViewModel(private val repository: Repository) : ViewModel() {
 
-    val lessonsUIList = ArrayList<LessonUI>()
+    private var lessonsUIList = MutableLiveData<List<LessonUI>>()
 
-    fun getScheduleData() {
+    fun getLessonsUIList(): MutableLiveData<List<LessonUI>> {
+        return lessonsUIList
+    }
+
+    fun getScheduleData()  {
         viewModelScope.launch {
             try {
                  val scheduleData = repository.getScheduleData()
                 getListOfLessons(scheduleData)
-                // list of users from the network
             } catch (e: Exception) {
                 Log.d("Error", e.toString())
             }
@@ -42,6 +47,8 @@ class FitnessKitViewModel(private val repository: Repository) : ViewModel() {
     }
 
     private fun transformLessonsToLessonsUI(lessonsList: List<Lesson>, trainersList: List<Trainer>){
+        val lessons = ArrayList<LessonUI>()
+
         for (lesson in lessonsList) {
             val nameofTrainer = getTrainerNameById(lesson.coach_id, trainersList)
             val lessonUI = LessonUI(lesson.appointment_id,
@@ -50,12 +57,23 @@ class FitnessKitViewModel(private val repository: Repository) : ViewModel() {
                 lesson.date,
                 lesson.endTime,
                 lesson.name,
-                lesson.place, lesson.startTime, " :  "
+                lesson.place, lesson.startTime,
+                " :  ",
+                true
             )
-            lessonsUIList.add(lessonUI)
+            lessons.add(lessonUI)
         }
-        lessonsUIList.sortBy { it.date }
-        lessonsUIList.forEach { println(it) }
+        lessons.sortBy { it.date }
+        lessonsUIList.postValue(setDateVisibleForLessonUI(lessons))
+    }
+
+    private fun setDateVisibleForLessonUI(lessons : ArrayList<LessonUI>) : ArrayList<LessonUI> {
+        for ( i in 1 until lessons.size) {
+            if (lessons.get(i).date == lessons.get(i-1).date) {
+                lessons.get(i).isDateVisible = false
+            }
+        }
+        return lessons
     }
 
     private fun getTrainerNameById (id : String, trainersList: List<Trainer>) : String {
@@ -67,5 +85,4 @@ class FitnessKitViewModel(private val repository: Repository) : ViewModel() {
         }
         return nameOfTrainer
     }
-
 }
