@@ -1,6 +1,7 @@
 package ml.vladmikh.projects.fitness_kit.ui.viewmodel
 
 import android.util.Log
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -15,19 +16,27 @@ import kotlin.collections.ArrayList
 
 class FitnessKitViewModel(private val repository: Repository) : ViewModel() {
 
-    private var lessonsUIList = MutableLiveData<List<LessonUI>>()
+    private var _lessonsUIList = MutableLiveData<List<LessonUI>>()
+    val lessonsUIList: LiveData<List<LessonUI>> get() = _lessonsUIList
 
-    fun getLessonsUIList(): MutableLiveData<List<LessonUI>> {
-        return lessonsUIList
+    private val _status = MutableLiveData<ScheduleApiStatus>()
+
+    val status: LiveData<ScheduleApiStatus> = _status
+
+
+    init {
+        getScheduleData()
     }
 
     fun getScheduleData()  {
         viewModelScope.launch {
+            _status.value = ScheduleApiStatus.LOADING
             try {
-                 val scheduleData = repository.getScheduleData()
+                _status.value = ScheduleApiStatus.DONE
+                val scheduleData = repository.getScheduleData()
                 getListOfLessons(scheduleData)
             } catch (e: Exception) {
-                Log.d("Error", e.toString())
+                _status.value = ScheduleApiStatus.ERROR
             }
         }
     }
@@ -64,7 +73,7 @@ class FitnessKitViewModel(private val repository: Repository) : ViewModel() {
             lessons.add(lessonUI)
         }
         lessons.sortBy { it.date }
-        lessonsUIList.postValue(setDateVisibleForLessonUI(lessons))
+        _lessonsUIList.value = setDateVisibleForLessonUI(lessons)
     }
 
     private fun setDateVisibleForLessonUI(lessons : ArrayList<LessonUI>) : ArrayList<LessonUI> {

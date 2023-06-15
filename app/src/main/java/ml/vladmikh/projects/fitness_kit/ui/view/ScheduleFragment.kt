@@ -3,6 +3,8 @@ package ml.vladmikh.projects.fitness_kit.ui.view
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
+import android.view.View.GONE
+import android.view.View.VISIBLE
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
@@ -10,6 +12,7 @@ import ml.vladmikh.projects.fitness_kit.component
 import ml.vladmikh.projects.fitness_kit.ui.adapters.FitnessKitRecyclerViewAdapter
 import ml.vladmikh.projects.fitness_kit.ui.viewmodel.FitnessKitViewModel
 import ml.vladmikh.projects.fitness_kit.ui.viewmodel.FitnessKitViewModelFactory
+import ml.vladmikh.projects.fitness_kit.ui.viewmodel.ScheduleApiStatus
 import ml.vladmikh.projects.shopapp.databinding.FragmentScheduleBinding
 import javax.inject.Inject
 
@@ -42,8 +45,16 @@ class ScheduleFragment : Fragment() {
         val adapter = FitnessKitRecyclerViewAdapter()
         recyclerViewLessons.adapter = adapter
 
-        viewModel.getLessonsUIList().observe(viewLifecycleOwner) {
-            adapter.refreshLessons(it)
+        viewModel.status.observe(viewLifecycleOwner) {newStatus ->
+            if (newStatus ==ScheduleApiStatus.ERROR) {
+                binding.imageViewError.visibility = VISIBLE
+            } else {
+                binding.imageViewError.visibility = GONE
+            }
+        }
+
+        viewModel.lessonsUIList.observe(viewLifecycleOwner) {
+            adapter.submitList(it)
         }
 
         viewModel.getScheduleData()
